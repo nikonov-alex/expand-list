@@ -61,15 +61,18 @@ const isHeaderClick = ( elem: HTMLElement ): elem is InsideHeader =>
 
 
 
+const headerClicked = <I,>( state: State<I>, clicked: InsideHeader ): State<I> =>
+    List.isItemAction( clicked )
+        ? List.itemAction( state, clicked )
+        : toggleItem( state, List.getIndex( List.getItem( clicked )) ) || alert( "Item does not exist" ) || state
+
 const maybeItemClicked = <I,>( state: State<I>, event: Event ): State<I> =>
     local( event.target as HTMLElement, clicked =>
         isHeaderClick( clicked )
-            ? List.isItemAction( clicked )
-                ? List.itemAction( state, clicked )
-                : toggleItem( state, List.getIndex( List.getItem( clicked )) ) || alert( "Item does not exist" ) || state
+            ? headerClicked( state, clicked )
             : state
     );
 
 
 
-export { makeRender, State, Item, makeItem, addItem, maybeItemClicked };
+export { makeRender, State, Item, makeItem, addItem, maybeItemClicked, isHeaderClick, headerClicked };
