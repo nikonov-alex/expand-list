@@ -54,24 +54,23 @@ const makeRender = <I,>( options: {
 
 
 type InsideHeader = List.InsideItem & { InsideHeader: null }
+type HeaderClickEvent = Event & { target: InsideHeader };
 
-const isHeaderClick = ( elem: HTMLElement ): elem is InsideHeader =>
-    elem.matches( ".header, .header *" );
+const isHeaderClick = ( event: Event ): event is HeaderClickEvent =>
+    (event.target as HTMLElement).matches( ".header, .header *" );
 
 
 
 
-const headerClicked = <I,>( state: State<I>, clicked: InsideHeader ): State<I> =>
-    List.isItemAction( clicked )
-        ? List.itemAction( state, clicked )
-        : toggleItem( state, List.getIndex( List.getItem( clicked )) ) || alert( "Item does not exist" ) || state
+const headerClicked = <I,>( state: State<I>, event: HeaderClickEvent ): State<I> =>
+    List.isItemAction( event )
+        ? List.itemAction( state, event )
+        : toggleItem( state, List.getIndex( List.getItem( event.target )) ) || alert( "Item does not exist" ) || state
 
 const maybeItemClicked = <I,>( state: State<I>, event: Event ): State<I> =>
-    local( event.target as HTMLElement, clicked =>
-        isHeaderClick( clicked )
-            ? headerClicked( state, clicked )
-            : state
-    );
+    isHeaderClick( event )
+        ? headerClicked( state, event )
+        : state
 
 
 
