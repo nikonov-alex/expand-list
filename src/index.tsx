@@ -74,4 +74,12 @@ const maybeItemClicked = <I,>( state: State<I>, event: Event ): State<I> =>
 
 
 
-export { makeRender, State, Item, makeItem, addItem, maybeItemClicked, isHeaderClick, headerClicked };
+
+const make = <I,>( items: I[] ): State<I> =>
+    items.map( item => ( {
+        expanded: false,
+        value: item
+    } ) );
+
+
+export { makeRender, State, make, Item, makeItem, addItem, maybeItemClicked, isHeaderClick, headerClicked };
