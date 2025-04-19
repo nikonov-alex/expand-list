@@ -38,11 +38,11 @@ const makeRender = <I,>( options: {
     List.makeRender(
         ( item: Item<I>, buttons: HTMLElement ) =>
             <div className="expand-item">
-                <div className="header">
+                <div className="item-header">
                     { options.displayHeader( item.value, buttons ) }
                 </div>
                 { item.expanded
-                    ? <div className="body">
+                    ? <div className="item-body">
                         { options.displayBody( item.value ) }
                     </div>
                     : null
@@ -57,7 +57,7 @@ type InsideHeader = List.InsideItem & { InsideHeader: null }
 type HeaderClickEvent = Event & { target: InsideHeader };
 
 const isHeaderClick = ( event: Event ): event is HeaderClickEvent =>
-    (event.target as HTMLElement).matches( ".header, .header *" );
+    (event.target as HTMLElement).matches( ".item-header, .item-header *" );
 
 
 
