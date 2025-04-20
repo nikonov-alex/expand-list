@@ -34,7 +34,8 @@ const toggleItem = <I,>( state: State<I>, index: number ): Types.Maybe<State<I>>
 const makeRender = <I,>( options: {
     displayHeader: { ( item: I, buttons: HTMLElement ): HTMLElement },
     displayBody: { (item: I): HTMLElement }
-    displayHidden?: { (item: I): HTMLElement }
+    displayHidden?: { (item: I): HTMLElement },
+    displayButtons?: HTMLElement,
     classes?: {
         list?: string,
         item?: string,
@@ -58,7 +59,8 @@ const makeRender = <I,>( options: {
                     ? options.displayHidden( item.value )
                     : null }
             </div> as HTMLElement,
-        classes: options.classes
+        classes: options.classes,
+        displayButtons: options.displayButtons
     } );
 
 
