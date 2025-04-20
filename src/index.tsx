@@ -34,21 +34,32 @@ const toggleItem = <I,>( state: State<I>, index: number ): Types.Maybe<State<I>>
 const makeRender = <I,>( options: {
     displayHeader: { ( item: I, buttons: HTMLElement ): HTMLElement },
     displayBody: { (item: I): HTMLElement }
+    displayHidden?: { (item: I): HTMLElement }
+    classes?: {
+        list?: string,
+        item?: string,
+        header?: string,
+        body?: string
+    }
 } ): { (s: State<I>): HTMLElement } =>
-    List.makeRender(
-        ( item: Item<I>, buttons: HTMLElement ) =>
+    List.makeRender( {
+        displayItem: ( item: Item<I>, buttons: HTMLElement ) =>
             <div className="expand-item">
-                <div className="item-header">
+                <div className={ "item-header " + ( options.classes?.header ? options.classes?.header : "" ) }>
                     { options.displayHeader( item.value, buttons ) }
                 </div>
                 { item.expanded
-                    ? <div className="item-body">
+                    ? <div className={ "item-body " + ( options.classes?.body ? options.classes?.body : "" ) }>
                         { options.displayBody( item.value ) }
                     </div>
                     : null
                 }
-            </div> as HTMLElement
-    );
+                { options.displayHidden
+                    ? options.displayHidden( item.value )
+                    : null }
+            </div> as HTMLElement,
+        classes: options.classes
+    } );
 
 
 
@@ -75,7 +86,7 @@ const maybeItemClicked = <I,>( state: State<I>, event: Event ): State<I> =>
 
 
 
-const make = <I,>( items: I[] ): State<I> =>
+const make = <I,>( items: I[] = [] ): State<I> =>
     items.map( item => ( {
         expanded: false,
         value: item
