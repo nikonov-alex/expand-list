@@ -1,98 +1,63 @@
-import * as List  from "@nikonov-alex/sortable-list";
-import { Constructs, Types } from "@nikonov-alex/functional-library";
-const local = Constructs.local;
-
-
-type Item<I> = {
+export type State<I> = {
     expanded: boolean,
     value: I
 }
 
-type State<I> = List.State<Item<I>>;
+export const getValue = <I,>( state: State<I> ): I =>
+    state.value;
 
-const makeItem = <I,>( value: I ): Item<I> =>
-    ( {
-        expanded: false,
-        value
-    } );
-
-const addItem = <I,>( state: State<I>, item: I ): State<I> =>
-    List.addItem( state, makeItem( item ) );
-
-const toggleItem = <I,>( state: State<I>, index: number ): Types.Maybe<State<I>> =>
-    !state[index]
-        ? false
-    : state.map( (item, currentIndex) =>
-        currentIndex === index
-            ? { expanded: !item.expanded, value: item.value }
-        : item
-    );
+export const toggle = <I,>( state: State<I> ): State<I> =>
+    ( { ... state, expanded: !state.expanded } );
 
 
 
 
-const makeRender = <I,>( options: {
-    displayHeader: { ( item: I, buttons: HTMLElement ): HTMLElement },
+export const render = <I,>( state: State<I>, options: {
+    displayHeader: { ( item: I ): HTMLElement },
     displayBody: { (item: I): HTMLElement }
-    displayHidden?: { (item: I): HTMLElement },
-    displayButtons?: HTMLElement,
     classes?: {
-        list?: string,
-        item?: string,
         header?: string,
         body?: string
     }
-} ): { (s: State<I>): HTMLElement } =>
-    List.makeRender( {
-        displayItem: ( item: Item<I>, buttons: HTMLElement ) =>
-            <div className="expand-item">
-                <div className={ "item-header " + ( options.classes?.header ? options.classes?.header : "" ) }>
-                    { options.displayHeader( item.value, buttons ) }
-                </div>
-                { item.expanded
-                    ? <div className={ "item-body " + ( options.classes?.body ? options.classes?.body : "" ) }>
-                        { options.displayBody( item.value ) }
-                    </div>
-                    : null
-                }
-                { options.displayHidden
-                    ? options.displayHidden( item.value )
-                    : null }
-            </div> as HTMLElement,
-        classes: options.classes,
-        displayButtons: options.displayButtons
-    } );
+} ): HTMLElement =>
+    <div className="expand">
+        <div className={ "item-header " + ( options.classes?.header ? options.classes?.header : "" ) }>
+            { options.displayHeader( state.value ) }
+        </div>
+        { state.expanded
+            ? <div className={ "item-body " + ( options.classes?.body ? options.classes?.body : "" ) }>
+                { options.displayBody( state.value ) }
+            </div>
+            : null
+        }
+    </div> as HTMLElement;
 
 
 
 
-type InsideHeader = List.InsideItem & { InsideHeader: null }
-type HeaderClickEvent = Event & { target: InsideHeader };
+type InsideHeader = HTMLElement & { InsideHeader: null }
+export type HeaderClickEvent = Event & { target: InsideHeader };
 
-const isHeaderClick = ( event: Event ): event is HeaderClickEvent =>
+export const isHeaderClick = ( event: Event ): event is HeaderClickEvent =>
     (event.target as HTMLElement).matches( ".item-header, .item-header *" );
 
 
 
 
-const headerClicked = <I,>( state: State<I>, event: HeaderClickEvent ): State<I> =>
-    List.isItemAction( event )
-        ? List.itemAction( state, event )
-        : toggleItem( state, List.getIndex( List.getItem( event.target )) ) || alert( "Item does not exist" ) || state
 
-const maybeItemClicked = <I,>( state: State<I>, event: Event ): State<I> =>
+export const headerClick = <I,>( state: State<I>, event: HeaderClickEvent ): State<I> =>
+    toggle( state );
+
+export const onClick = <I,>( state: State<I>, event: Event ): State<I> =>
     isHeaderClick( event )
-        ? headerClicked( state, event )
+        ? headerClick( state, event )
         : state
 
 
 
 
-const make = <I,>( items: I[] = [] ): State<I> =>
-    items.map( item => ( {
+export const make = <I,>( value: I ): State<I> =>
+    ( {
         expanded: false,
-        value: item
-    } ) );
-
-
-export { makeRender, State, make, Item, makeItem, addItem, maybeItemClicked, isHeaderClick, headerClicked };
+        value
+    } );

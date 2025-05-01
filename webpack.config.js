@@ -28,8 +28,5 @@ module.exports = {
     },
     optimization: {
         minimize: true
-    },
-    externals: {
-        "@nikonov-alex/sortable-list": "@nikonov-alex/sortable-list"
     }
 };
