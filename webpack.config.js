@@ -28,5 +28,11 @@ module.exports = {
     },
     optimization: {
         minimize: true
+    },
+    externals: {
+        "@nikonov-alex/expand": "@nikonov-alex/expand",
+        "@nikonov-alex/functional-library": "@nikonov-alex/functional-library",
+        "@nikonov-alex/sortable-list": "@nikonov-alex/sortable-list",
+        "jsx-dom": "jsx-dom"
     }
 };

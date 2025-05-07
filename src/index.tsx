@@ -1,63 +1,32 @@
-export type State<I> = {
-    expanded: boolean,
-    value: I
-}
+import * as List from "@nikonov-alex/sortable-list";
+import * as Expand from "@nikonov-alex/expand";
+import { Constructs } from "@nikonov-alex/functional-library";
+const local = Constructs.local;
 
-export const getValue = <I,>( state: State<I> ): I =>
-    state.value;
 
-export const toggle = <I,>( state: State<I> ): State<I> =>
-    ( { ... state, expanded: !state.expanded } );
+
+export type State<I> = List.State<Expand.State<I>>;
 
 
 
 
-export const render = <I,>( state: State<I>, options: {
-    displayHeader: { ( item: I ): HTMLElement },
-    displayBody: { (item: I): HTMLElement }
-    classes?: {
-        header?: string,
-        body?: string
-    }
-} ): HTMLElement =>
-    <div className="expand">
-        <div className={ "item-header " + ( options.classes?.header ? options.classes?.header : "" ) }>
-            { options.displayHeader( state.value ) }
-        </div>
-        { state.expanded
-            ? <div className={ "item-body " + ( options.classes?.body ? options.classes?.body : "" ) }>
-                { options.displayBody( state.value ) }
-            </div>
-            : null
-        }
-    </div> as HTMLElement;
+export const toggleItem = <I,>( state: State<I>, event: List.ItemEvent & Expand.HeaderClickEvent ): State<I> =>
+    local( List.getIndex( List.getItemElem( event.target ) ), index =>
+        List.updateItem(
+            state,
+            index,
+            Expand.toggle(
+                List.getItem( state, index ))));
 
-
-
-
-type InsideHeader = HTMLElement & { InsideHeader: null }
-export type HeaderClickEvent = Event & { target: InsideHeader };
-
-export const isHeaderClick = ( event: Event ): event is HeaderClickEvent =>
-    (event.target as HTMLElement).matches( ".item-header, .item-header *" );
-
-
-
-
-
-export const headerClick = <I,>( state: State<I>, event: HeaderClickEvent ): State<I> =>
-    toggle( state );
-
-export const onClick = <I,>( state: State<I>, event: Event ): State<I> =>
-    isHeaderClick( event )
-        ? headerClick( state, event )
-        : state
-
-
-
-
-export const make = <I,>( value: I ): State<I> =>
-    ( {
-        expanded: false,
-        value
-    } );
+export const itemEvent = <I,>( state: State<I>, event: List.ItemEvent, options?: {
+    isToggleAllowed?: { (state: State<I>, event: List.ItemEvent & Expand.HeaderClickEvent): boolean }
+} ): State<I> =>
+    List.isItemAction( event )
+        ? List.itemAction( state, event )
+        : Expand.isHeaderClick( event )
+            ? !!options?.isToggleAllowed
+                ? options.isToggleAllowed( state, event )
+                    ? toggleItem( state, event )
+                    : state
+                : toggleItem( state, event )
+            : state;
