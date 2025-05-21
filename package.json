@@ -1,6 +1,6 @@
 {
   "name": "@nikonov-alex/expand-list",
-  "version": "0.0.10",
+  "version": "0.0.26",
   "description": "Expand list",
   "main": "build/index.js",
   "types": "src/index.ts",
@@ -18,9 +18,9 @@
   },
   "homepage": "https://github.com/nikonov-alex/expand-list#readme",
   "devDependencies": {
-    "@nikonov-alex/expand": "^0.0.1",
+    "@nikonov-alex/expand": "^0.0.5",
     "@nikonov-alex/functional-library": "^0.0.31",
-    "@nikonov-alex/sortable-list": "^0.0.8",
+    "@nikonov-alex/sortable-list": "^0.0.19",
     "ts-loader": "^9.4.4",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
